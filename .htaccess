@@ -1,22 +1,42 @@
-<IfModule mod_rewrite.c>
-    RewriteEngine On
+# Aktifkan Rewrite Engine
+RewriteEngine On
 
-    # Pastikan modul rewrite diaktifkan
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php/$1 [L]
+# 1. Menghilangkan Ekstensi .php dari URL
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php [L]
+
+# 2a. Mengarahkan www ke non-www
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+# ATAU
+
+# 2b. Mengarahkan non-www ke www (pilih salah satu dari 2a atau 2b)
+# RewriteCond %{HTTP_HOST} !^www\. [NC]
+# RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]
+
+# 4. Mencegah Hotlinking Gambar (ganti domainanda.com dengan domain Anda)
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?domainanda\.com [NC]
+RewriteRule \.(jpg|jpeg|png|gif)$ - [NC,F,L]
+
+# 5. Mengatur Halaman Error Kustom (pastikan path sesuai)
+ErrorDocument 404 /error/404.php
+ErrorDocument 500 /error/500.php
+
+# 6. Mengaktifkan Kompresi Gzip
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/plain
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE application/xhtml+xml
+  AddOutputFilterByType DEFLATE application/rss+xml
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/x-javascript
 </IfModule>
 
-# Tambahan opsional untuk meningkatkan keamanan
-# Menonaktifkan akses langsung ke file penting
-<FilesMatch "(^application|^system|\.env|composer\.(json|lock))">
-    Order deny,allow
-    Deny from all
-</FilesMatch>
-
-# php -- BEGIN cPanel-generated handler, do not edit
-# Set the “alt-php74” package as the default “PHP” programming language.
-<IfModule mime_module>
-  AddHandler application/x-httpd-alt-php74___lsphp .php .php7 .phtml
-</IfModule>
-# php -- END cPanel-generated handler, do not edit
+# 7. Mengubah Direktori Default (sesuaikan sesuai kebutuhan)
+DirectoryIndex index.php index.html home.php
