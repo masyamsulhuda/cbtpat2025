@@ -18,7 +18,7 @@ RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
 
 # 4. Mencegah Hotlinking Gambar (ganti domainanda.com dengan domain Anda)
 RewriteCond %{HTTP_REFERER} !^$
-RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?domainanda\.com [NC]
+RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?dulur\.my.id [NC]
 RewriteRule \.(jpg|jpeg|png|gif)$ - [NC,F,L]
 
 # 5. Mengatur Halaman Error Kustom (pastikan path sesuai)
